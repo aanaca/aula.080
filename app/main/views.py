@@ -1,7 +1,7 @@
 from flask import render_template, session, redirect, url_for, current_app
 from .. import db
 from ..models import User, Role
-from ..email import send_email
+from ..email import send_email, send_simple_message
 from . import main
 from .forms import NameForm
 
@@ -18,9 +18,12 @@ def index():
             db.session.add(user)
             db.session.commit()
             session['known'] = False
+            print('FLASKY_ADMIN: ' + str(current_app.config['FLASKY_ADMIN']), flush=True)
             if current_app.config['FLASKY_ADMIN']:
-                send_email(current_app.config['FLASKY_ADMIN'], 'New User',
-                           'mail/new_user', user=user)
+                #send_email(current_app.config['FLASKY_ADMIN'], 'New User', 'mail/new_user', user=user)
+                print('Enviando mensagem...', flush=True)
+                send_simple_message([current_app.config['FLASKY_ADMIN'], "flaskaulasweb@zohomail.com"], 'Novo usuário', form.name.data)
+                print('Mensagem enviada...', flush=True)
         else:
             session['known'] = True
         session['name'] = form.name.data
